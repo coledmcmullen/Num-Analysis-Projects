@@ -33,14 +33,14 @@ for k in range (0, 10):
 	L = np.eye(3)
 	ep = pow(10, -1 * k)
 	b = np.array([0, ep, 2]).T
-	print("\nTesting with epsilon = "+str(ep)+"\n")
+	print("\nSolving for x with epsilon = "+str(ep))
 	A = A_gen(ep)
 	LU(A)
 
 	y = np.dot(np.linalg.inv(L), b)
 	x = np.dot(np.linalg.inv(U), y)
 	print("Error: ")
-	print(x - xex)
+	print(np.linalg.norm(x - xex))
 
 # solve for x given b = [2log(5/2) - 2, (epsilon - 2)log(5/2) + 2, 2]
 # and find the error
@@ -53,7 +53,7 @@ for k in range (0, 10):
 	L = np.eye(3)
 	ep = 1/3 * math.pow(10, -1*k)
 	b = np.array([2 * math.log(2.5) - 2, (ep - 2) * math.log(2.5) + 2, 2]).T
-	print("\nTesting epsilon = "+str(ep)+"\n")
+	print("\nSolving for x with epsilon = "+str(ep))
 	A = A_gen(ep)
 	LU(A)
 
