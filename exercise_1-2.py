@@ -39,6 +39,8 @@ for k in range (0, 10):
 
 	y = np.dot(np.linalg.inv(L), b)
 	x = np.dot(np.linalg.inv(U), y)
+	print("x =")
+	print(x)
 	print("Error: ")
 	print(np.linalg.norm(x - xex))
 
@@ -59,6 +61,8 @@ for k in range (0, 10):
 
 	y = np.dot(np.linalg.inv(L), b)
 	x = np.dot(np.linalg.inv(U), y)
+	print("x =")
+	print(x)
 	print("Relative error: ")
 	print(np.linalg.norm(x - xex)/np.linalg.norm(xex))
 
