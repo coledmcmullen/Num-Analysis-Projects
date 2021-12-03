@@ -89,16 +89,30 @@ def PCG_helper(iter, x, A, b, P, r, r0, z, p, tol):
 	return PCG_helper(iter, x, A, b, P, r, r0, z, p, tol)
 
 # generate sample input
+print("Generating Sample Input.....")
+print("A:")
 A = 3 * np.eye(10) + np.diag(np.ones(9), -1) + np.diag(np.ones(9), 1)
+print(A)
+print("b:")
 x = np.ones((10, 1))
 b = np.linalg.solve(A, x)
+print(b)
 x0 = np.zeros((10, 1))
 # test jacobi method
+print("Using the Jacobi method......")
+print("Iterations:")
 iterJ = itermeth(A, b, x0, pow(10, -12), 'J')
+print("Error:")
 print(np.linalg.norm(iterJ - x))
 # test gauss-siedel
+print("Using the Gauss-Siedel method.....")
+print("Iterations:")
 iterG = itermeth(A, b, x0, pow(10, -12), 'G')
+print("Error:")
 print(np.linalg.norm(iterG - x))
 # test PCG with incomplete cholesky preconditioning
+print("Using the PCG with an incomplete Cholesky preconditioner...")
+print("Iterations:")
 iterPCG = PCG(x0, A, b, pow(10, -12))
+print("Error:")
 print(np.linalg.norm(iterPCG - x))
