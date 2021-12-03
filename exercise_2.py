@@ -2,15 +2,17 @@
 # Programming Project 2
 
 import math
+import time
 import numpy as np
 
 # general iterative method, after textbook
 def itermeth(A, b, x0, tol, P):
+	tic = time.perf_counter()
 	dim = A.shape[0]
-	if P == 'J':
+	if P == 'J': # if jacobi method is used
 		L = np.diagflat(np.diag(A))
 		U = np.eye(dim)
-	if P == 'G':
+	if P == 'G': # if Gauss-Seidel method is used
 		L = np.tril(A)
 		U = np.eye(dim)
 	beta = 1
@@ -27,15 +29,12 @@ def itermeth(A, b, x0, tol, P):
 		x = x + (alpha * z)
 		r = b - np.dot(A, x)
 		err = np.linalg.norm(r) / r0
+	toc = time.perf_counter()
+	print("Elapsed time: " + str(toc - tic))
 	print(iter)
 	return x
 
-# generate preconditioner for A
-def precondition(A):
-	return np.diag(np.diag(A))
-	#return np.tril(A)
-
-# generate incomplete cholesky preconditioner
+# generate incomplete cholesky preconditioner for matrix A
 def incompleteLU(A):
 	dim = A.shape[0] - 1
 
@@ -61,6 +60,7 @@ def incompleteLU(A):
 # perform the Preconditioned Conjugate Gradient Method
 def PCG(x, A, b, tol):
 	iter = 0
+	tic = time.perf_counter()
 	P = incompleteLU(A) # generate preconditioner for A
 
 	r = b - np.dot(A, x)
@@ -70,8 +70,11 @@ def PCG(x, A, b, tol):
 	z = np.linalg.solve(P, r)
 	p = z
 	result = PCG_helper(iter, x, A, b, P, r, r, z, p, tol)
+	toc = time.perf_counter()
+	print("Elapsed time: " + str(toc - tic))
 	return result
 
+# recursive helper function
 def PCG_helper(iter, x, A, b, P, r, r0, z, p, tol):
 	iter = iter + 1
 	alpha = (np.dot(p.T, r))/(np.dot(p.T, np.dot(A, p)))
@@ -91,13 +94,13 @@ def PCG_helper(iter, x, A, b, P, r, r0, z, p, tol):
 # generate sample input
 print("Generating Sample Input.....")
 print("A:")
-A = 3 * np.eye(10) + np.diag(np.ones(9), -1) + np.diag(np.ones(9), 1)
+A = 2.001 * np.eye(30) + np.diag(np.ones(29), -1) + np.diag(np.ones(29), 1)
 print(A)
 print("b:")
-x = np.ones((10, 1))
+x = np.ones((30, 1))
 b = np.linalg.solve(A, x)
 print(b)
-x0 = np.zeros((10, 1))
+x0 = np.zeros((30, 1))
 # test jacobi method
 print("Using the Jacobi method......")
 print("Iterations:")
