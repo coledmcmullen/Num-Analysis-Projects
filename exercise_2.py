@@ -27,17 +27,41 @@ def itermeth(A, b, x0, tol, P):
 		x = x + (alpha * z)
 		r = b - np.dot(A, x)
 		err = np.linalg.norm(r) / r0
-	return iter
+	print(iter)
+	return x
 
 # generate preconditioner for A
 def precondition(A):
 	return np.diag(np.diag(A))
 	#return np.tril(A)
 
+# generate incomplete cholesky preconditioner
+def incompleteLU(A):
+	dim = A.shape[0] - 1
+
+	for k in range (1, dim):
+		if(A[k, k] < 0):
+			print("Negative Value: " + str(A[k, k]))
+		A[k, k] = math.sqrt(A[k, k])
+		for i in range (k+1, dim):
+			if(A[i, k] != 0):
+				A[i, k] = A[i, k]/A[k, k]
+		for j in range (k+1, dim):
+			for i in (j, dim):
+				if(A[i, j] != 0):
+					A[i, j] = A[i, j] - (A[i, k] * A[j, k])
+
+	for i in (1, dim):
+		for j in (i+1, dim):
+			if(i < 9):
+				A[i, j] = 0
+
+	return A
+
 # perform the Preconditioned Conjugate Gradient Method
 def PCG(x, A, b, tol):
 	iter = 0
-	P = precondition(A)
+	P = incompleteLU(A) # generate preconditioner for A
 
 	r = b - np.dot(A, x)
 	E = np.linalg.norm(r)/np.linalg.norm(b) # stop if initial residual is small enough
@@ -64,17 +88,17 @@ def PCG_helper(iter, x, A, b, P, r, r0, z, p, tol):
 
 	return PCG_helper(iter, x, A, b, P, r, r0, z, p, tol)
 
-# test Jacobi method on given matrix
-A = 3 * np.eye(10) - 2 * np.diag(np.ones(9), -1) - np.diag(np.ones(9), 1)
+# generate sample input
+A = 3 * np.eye(10) + np.diag(np.ones(9), -1) + np.diag(np.ones(9), 1)
 x = np.ones((10, 1))
 b = np.linalg.solve(A, x)
 x0 = np.zeros((10, 1))
+# test jacobi method
 iterJ = itermeth(A, b, x0, pow(10, -12), 'J')
-#iterJ = jacobi(A, b, x0, pow(10, -12))
+print(np.linalg.norm(iterJ - x))
+# test gauss-siedel
 iterG = itermeth(A, b, x0, pow(10, -12), 'G')
+print(np.linalg.norm(iterG - x))
+# test PCG with incomplete cholesky preconditioning
 iterPCG = PCG(x0, A, b, pow(10, -12))
-#print(A)
-#print(x)
-#print(b)
-print(iterJ)
-print(iterG)
+print(np.linalg.norm(iterPCG - x))
